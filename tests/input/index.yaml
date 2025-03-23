@@ -1,0 +1,7 @@
+markdown:
+  title: Внутренние статьи
+  files:
+    - basics.md
+    - code.md
+    - media.md
+    - tables-and-lists.md
