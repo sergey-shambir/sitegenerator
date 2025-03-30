@@ -114,12 +114,9 @@ func LoadPagesIndex(path string) (*PagesIndex, error) {
 	if err != nil {
 		return nil, err
 	}
-	return loadPagesIndexImpl(data)
-}
 
-func loadPagesIndexImpl(data []byte) (*PagesIndex, error) {
 	var pagesIndex PagesIndex
-	err := yaml.Unmarshal(data, &pagesIndex)
+	err = yaml.Unmarshal(data, &pagesIndex)
 	if err != nil {
 		return nil, err
 	}

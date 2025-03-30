@@ -6,21 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const Index = `
-internal:
-  title: Внутренние статьи
-  files:
-    - markdown-demo.md
-    - notes.md
-drafts:
-  title: Черновики
-  visible: false
-  files:
-    - acceptance-testing.md
-`
-
 func TestLoadIndex(t *testing.T) {
-	pagesIndex, err := loadPagesIndexImpl([]byte(Index))
+	pagesIndex, err := LoadPagesIndex(testDataAbsPath("index.yaml"))
 	assert.NoError(t, err)
 
 	sections := pagesIndex.ListSections()
@@ -42,7 +29,7 @@ func TestLoadIndex(t *testing.T) {
 }
 
 func TestAddPages(t *testing.T) {
-	pagesIndex, err := loadPagesIndexImpl([]byte(Index))
+	pagesIndex, err := LoadPagesIndex(testDataAbsPath("index.yaml"))
 	assert.NoError(t, err)
 
 	pagesIndex.AddPages([]string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md"})
