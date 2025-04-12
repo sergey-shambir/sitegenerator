@@ -35,8 +35,9 @@ func TestLoadConfig(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, &Config{
-		SourceDir:    filepath.Join(testDataDir, "input"),
-		TargetDir:    filepath.Join(testDataDir, "output"),
-		TemplatesDir: filepath.Join(testDataDir, "html_templates"),
+		SourceDir:            filepath.Join(testDataDir, "input"),
+		TargetDir:            filepath.Join(testDataDir, "output"),
+		TemplatesDir:         filepath.Join(testDataDir, "html_templates"),
+		IgnoreFileExtensions: []string{".json", ".yaml"},
 	}, config)
 }

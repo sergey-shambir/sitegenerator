@@ -2,25 +2,74 @@ package data
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
 	yaml "gopkg.in/yaml.v3"
-)
 
-type PageMetadata struct {
-	Title       string
-	Description string
-	Category    string
-	Keywords    []string
-}
+	"sitegenerator/app"
+)
 
 const metadataMarker = "---"
 
-func ParsePageMetadata(path string) (*PageMetadata, error) {
+type generatorCache struct {
+	pagesDir  string
+	cachePath string
+	pages     map[string]*app.PageMetadata
+}
+
+func LoadGeneratorCache(pagesDir string, cachePath string) (app.GeneratorCache, error) {
+	cache := &generatorCache{
+		pagesDir:  pagesDir,
+		cachePath: cachePath,
+		pages:     make(map[string]*app.PageMetadata),
+	}
+	data, err := os.ReadFile(cachePath)
+
+	if err != nil {
+		if os.IsNotExist(err) {
+			return cache, nil
+		}
+		return nil, xerrors.Errorf("failed to read metadata cache: %w", err)
+	}
+	err = json.Unmarshal(data, &cache.pages)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse metadata cache: %w", err)
+	}
+	return cache, nil
+}
+
+func (c *generatorCache) GetPageMetadata(path string) (*app.PageMetadata, error) {
+	metadata, ok := c.pages[path]
+	if !ok {
+		var err error
+		metadata, err = ParsePageMetadata(filepath.Join(c.pagesDir, path))
+		if err != nil {
+			return nil, err
+		}
+		c.pages[path] = metadata
+	}
+	return metadata, nil
+}
+
+func (c *generatorCache) SaveCache() error {
+	data, err := json.Marshal(c.pages)
+	if err != nil {
+		return xerrors.Errorf("failed to format metadata cache: %w", err)
+	}
+	err = os.WriteFile(c.cachePath, data, 0644)
+	if err != nil {
+		return xerrors.Errorf("failed to save metadata cache: %w", err)
+	}
+	return nil
+}
+
+func ParsePageMetadata(path string) (*app.PageMetadata, error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open file '%s': %w", path, err)
@@ -30,7 +79,7 @@ func ParsePageMetadata(path string) (*PageMetadata, error) {
 		return nil, xerrors.Errorf("failed to read '%s' metadata: %w", path, err)
 	}
 
-	var metadata PageMetadata
+	var metadata app.PageMetadata
 	err = yaml.Unmarshal([]byte(contents), &metadata)
 
 	return &metadata, err

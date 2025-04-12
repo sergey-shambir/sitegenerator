@@ -1,3 +1,4 @@
 sourceDir: "input"
 targetDir: "output"
 templatesDir: "html_templates"
+ignoreFileExtensions: [".json", ".yaml"]

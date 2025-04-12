@@ -9,8 +9,8 @@ func CreateRootCommand(appVersion string) *cobra.Command {
 		Use:     "sitegenerator",
 		Version: appVersion,
 		Short:   "Static site generator",
-		Run: func(cmd *cobra.Command, args []string) {
-			generate(cmd, args)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return generate(cmd, args)
 		},
 	}
 }
