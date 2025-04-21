@@ -1,6 +1,7 @@
 package data
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -27,21 +28,47 @@ func NewTargets(root string) (app.Targets, error) {
 }
 
 func (t *targets) Write(path string, data []byte) error {
-	err := t.ensureParentDirCreated(path)
+	dst, err := t.openOutputFile(path)
+	if err != nil {
+		return err
+	}
+	_, err = dst.Write(data)
+	if err != nil {
+		return xerrors.Errorf("failed to to output file %s: %w", path, err)
+	}
+	return nil
+}
+
+func (t *targets) Copy(path string, src io.Reader) error {
+	dst, err := t.openOutputFile(path)
 	if err != nil {
 		return err
 	}
 
-	absPath, err := t.resolveAbsPath(path)
+	_, err = io.Copy(dst, src)
 	if err != nil {
-		return nil
-	}
-
-	err = os.WriteFile(absPath, data, 0644)
-	if err != nil {
-		return xerrors.Errorf("failed to write %s: %w", path, err)
+		return xerrors.Errorf("failed to copy to output file %s: %w", path, err)
 	}
 	return nil
+}
+
+func (t *targets) openOutputFile(path string) (io.Writer, error) {
+	err := t.ensureParentDirCreated(path)
+	if err != nil {
+		return nil, err
+	}
+
+	absPath, err := t.resolveAbsPath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	dst, err := os.OpenFile(absPath, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to open output file for writing %s: %w", path, err)
+	}
+
+	return dst, nil
 }
 
 func (t *targets) ensureParentDirCreated(path string) error {
