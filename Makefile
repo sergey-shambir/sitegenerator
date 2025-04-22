@@ -23,4 +23,5 @@ test:
 tidy:
 	cd src/sitegenerator && \
 	go mod tidy && \
+	go mod vendor && \
 	cd ../..
