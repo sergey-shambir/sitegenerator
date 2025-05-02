@@ -1,10 +1,10 @@
-.PHONY: all clean build test
+.PHONY: all clean build test image
 
 RELEASE?=0.1.0
 COMMIT?=$(shell git rev-parse --short HEAD)
 BUILD_TIME?=$(shell date -u '+%Y-%m-%d %H:%M:%S')
 
-all: tidy test build
+all: tidy test build image
 
 clean:
 	rm -f bin/sitegenerator
@@ -25,3 +25,6 @@ tidy:
 	go mod tidy && \
 	go mod vendor && \
 	cd ../..
+
+image: tidy test build
+	docker build . -t docker.local/sitegenerator/sitegenerator:latest

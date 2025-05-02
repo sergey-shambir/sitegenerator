@@ -14,6 +14,8 @@ import (
 const (
 	ConfigFileName = "sitegenerator.yaml"
 	CacheFileName  = "sitegenerator.cache.json"
+
+	ConverterRootEnvVar = "SITEGENERATOR_CONVERTER_ROOT"
 )
 
 func generate(cmd *cobra.Command, args []string) error {
@@ -42,7 +44,15 @@ func generate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	generator := app.NewGenerator(sources, targets, cache)
+	converterRoot := os.Getenv(ConverterRootEnvVar)
+	converter, err := data.NewMarkdownConverter(converterRoot)
+	if err != nil {
+		return err
+	}
+
+	logger := newGeneratorLogger()
+
+	generator := app.NewGenerator(sources, targets, converter, cache, logger)
 
 	return generator.Generate()
 }

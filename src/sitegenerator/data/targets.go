@@ -92,9 +92,27 @@ func (t *targets) ensureDirCreated(dir string) error {
 		return err
 	}
 
-	err = os.Mkdir(absDirPath, 0755)
-	if !os.IsExist(err) {
-		return xerrors.Errorf("failed to create directory %s: %w", absDirPath, err)
+	return t.ensureDirCreatedRecursive(absDirPath)
+}
+
+func (t *targets) ensureDirCreatedRecursive(dir string) error {
+	if _, err := os.Stat(dir); err == nil {
+		return nil
+	}
+
+	parentDir := filepath.Dir(dir)
+	if parentDir == dir {
+		return xerrors.Errorf("root directory does not exist %s", dir)
+	}
+
+	err := t.ensureDirCreatedRecursive(parentDir)
+	if err != nil {
+		return err
+	}
+
+	err = os.Mkdir(dir, 0755)
+	if err != nil && !os.IsExist(err) {
+		return xerrors.Errorf("failed to create directory %s: %w", dir, err)
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,27 +14,33 @@ type markdownConverter struct {
 	converterScript string
 }
 
-func NewMarkdownConverter(converterRoot string) *markdownConverter {
-	return &markdownConverter{
+func NewMarkdownConverter(converterRoot string) (*markdownConverter, error) {
+	c := &markdownConverter{
 		converterRoot:   converterRoot,
 		converterScript: "index.js",
 	}
-}
 
-func (c *markdownConverter) ConvertToHtml(path string) ([]byte, error) {
 	err := c.checkConverterExists()
 	if err != nil {
 		return nil, err
 	}
+	return c, nil
+}
+
+func (c *markdownConverter) ConvertToHtml(path string) ([]byte, error) {
+	var stdout, stderr bytes.Buffer
 
 	cmd := exec.Command("node", c.converterScript, path)
 	cmd.Dir = c.converterRoot
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 
-	output, err := cmd.Output()
+	err := cmd.Run()
 	if err != nil {
-		return nil, xerrors.Errorf("failed to convert markdown file %s: %w", path, err)
+		return nil, xerrors.Errorf("failed to convert markdown file %s: %w\n%s", path, err, stderr.String())
 	}
-	return output, nil
+
+	return stdout.Bytes(), nil
 }
 
 func (c *markdownConverter) checkConverterExists() error {

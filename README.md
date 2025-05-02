@@ -2,6 +2,12 @@
 
 Основан на преобразовании Markdown→HTML и SCSS→CSS.
 
+Сборка:
+
 ```bash
-docker build . -t sitegenerator
+# Сборка проекта и docker-образа
+make
+
+# Сборка проекта без сборки docker-образа
+make build
 ```

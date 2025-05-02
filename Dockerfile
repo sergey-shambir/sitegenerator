@@ -8,7 +8,7 @@ COPY --parents Makefile src/sitegenerator/go.mod src/sitegenerator/go.sum .
 RUN make tidy
 
 COPY . .
-RUN make
+RUN make test build
 
 FROM node:23.11.0 AS node_builder
 
@@ -25,5 +25,7 @@ WORKDIR /app
 COPY --from=go_builder /app/bin/sitegenerator /app/sitegenerator
 
 COPY --from=node_builder /app/src/nodeconverter /app/nodeconverter
+
+ENV SITEGENERATOR_CONVERTER_ROOT=/app/nodeconverter
 
 CMD ["/app/sitegenerator"]
