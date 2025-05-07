@@ -15,9 +15,11 @@ func TestReadSources(t *testing.T) {
 
 	expectedImages := []string{"images/1.gif", "images/2.jpg", "images/3.webp", "images/4.png"}
 	expectedMarkdown := []string{"markdown-demo.md"}
+	expectedSass := []string{"main.scss"}
 
 	assert.Equal(t, dir, sources.Root())
 	assert.Equal(t, expectedMarkdown, sources.ListFiles(app.Markdown))
 	assert.Equal(t, expectedImages, sources.ListFiles(app.Image))
+	assert.Equal(t, expectedSass, sources.ListFiles(app.Sass))
 	assert.Equal(t, []string(nil), sources.ListFiles(app.Unknown))
 }

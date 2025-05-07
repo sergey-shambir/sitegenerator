@@ -5,6 +5,7 @@ type SourceType int
 const (
 	Unknown SourceType = iota
 	Markdown
+	Sass
 	Image
 	StyleSheet
 	JavaScript

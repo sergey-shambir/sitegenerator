@@ -58,15 +58,9 @@ func classify(ext string) app.SourceType {
 	switch ext {
 	case ".md":
 		return app.Markdown
-	case ".jpg":
-		return app.Image
-	case ".jpeg":
-		return app.Image
-	case ".png":
-		return app.Image
-	case ".gif":
-		return app.Image
-	case ".webp":
+	case ".scss", ".sass":
+		return app.Sass
+	case ".jpg", ".jpeg", ".png", ".gif", ".webp":
 		return app.Image
 	case ".css":
 		return app.StyleSheet

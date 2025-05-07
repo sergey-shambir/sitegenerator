@@ -45,7 +45,7 @@ func generate(cmd *cobra.Command, args []string) error {
 	}
 
 	converterRoot := os.Getenv(ConverterRootEnvVar)
-	converter, err := data.NewMarkdownConverter(converterRoot)
+	converter, err := data.NewConverter(converterRoot)
 	if err != nil {
 		return err
 	}

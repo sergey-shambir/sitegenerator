@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
     "@sindresorhus/slugify": "^2.2.1",
     "markdown-it": "^14.1.0",
@@ -14,7 +13,8 @@
     "markdown-it-image-figures": "^2.1.1",
     "markdown-it-meta": "^0.0.1",
     "markdown-it-title": "^4.0.0",
-    "markdown-it-toc-done-right": "^4.2.0"
+    "markdown-it-toc-done-right": "^4.2.0",
+    "sass": "^1.87.0"
   },
   "devDependencies": {
     "jest": "^29.7.0"

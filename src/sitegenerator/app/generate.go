@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -11,12 +10,12 @@ import (
 type Generator struct {
 	sources   Sources
 	targets   Targets
-	converter MarkdownConverter
+	converter Converter
 	cache     GeneratorCache
 	logger    GeneratorLogger
 }
 
-func NewGenerator(sources Sources, targets Targets, converter MarkdownConverter, cache GeneratorCache, logger GeneratorLogger) *Generator {
+func NewGenerator(sources Sources, targets Targets, converter Converter, cache GeneratorCache, logger GeneratorLogger) *Generator {
 	return &Generator{
 		sources:   sources,
 		targets:   targets,
@@ -27,16 +26,17 @@ func NewGenerator(sources Sources, targets Targets, converter MarkdownConverter,
 }
 
 func (g *Generator) Generate() error {
-	for i, path := range g.sources.ListFiles(Markdown) {
-		fmt.Printf("%d. %s\n", i, path)
-	}
-
 	err := g.copyAssets()
 	if err != nil {
 		return err
 	}
 
 	err = g.convertMarkdownFiles()
+	if err != nil {
+		return err
+	}
+
+	err = g.convertSassFiles()
 	if err != nil {
 		return err
 	}
@@ -51,6 +51,16 @@ func (g *Generator) Generate() error {
 func (g *Generator) convertMarkdownFiles() error {
 	for _, path := range g.sources.ListFiles(Markdown) {
 		err := g.convertMarkdownFile(path)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (g *Generator) convertSassFiles() error {
+	for _, path := range g.sources.ListFiles(Sass) {
+		err := g.convertSassFile(path)
 		if err != nil {
 			return err
 		}
@@ -82,12 +92,29 @@ func (g *Generator) copyAssets() error {
 
 func (g *Generator) convertMarkdownFile(path string) error {
 	srcAbsPath := filepath.Join(g.sources.Root(), path)
-	html, err := g.converter.ConvertToHtml(srcAbsPath)
+	html, err := g.converter.ConvertMarkdownToHtml(srcAbsPath)
 	if err != nil {
 		return err
 	}
 
 	outputPath := replaceFileExtension(path, ".html")
+	err = g.targets.Write(outputPath, html)
+	if err != nil {
+		return err
+	}
+
+	g.logger.LogConvertedFile(path, outputPath)
+	return nil
+}
+
+func (g *Generator) convertSassFile(path string) error {
+	srcAbsPath := filepath.Join(g.sources.Root(), path)
+	html, err := g.converter.ConvertSassToCss(srcAbsPath)
+	if err != nil {
+		return err
+	}
+
+	outputPath := replaceFileExtension(path, ".css")
 	err = g.targets.Write(outputPath, html)
 	if err != nil {
 		return err
