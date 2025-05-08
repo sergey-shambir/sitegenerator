@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf8" />
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {{> head_resourses }}
+</head>
+
+<body>
+    <div class="site-content">
+        {{> header }}
+        <article>
+            <h1>{{title}}</h1>
+            {{#each links}}
+            <p>
+                <a href="{{ url }}">{{ title }}</a>
+            </p>
+            {{/each}}
+        </article>
+        {{> footer }}
+    </div>
+</body>
+
+</html>

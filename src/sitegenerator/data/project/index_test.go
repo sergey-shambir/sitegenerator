@@ -1,13 +1,15 @@
-package data
+package project
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"sitegenerator/data/testdata"
 )
 
 func TestLoadIndex(t *testing.T) {
-	pagesIndex, err := LoadPagesIndex(testDataAbsPath("index.yaml"))
+	pagesIndex, err := LoadPagesIndex(testdata.AbsPath("index.yaml"))
 	assert.NoError(t, err)
 
 	sections := pagesIndex.ListSections()
@@ -29,7 +31,7 @@ func TestLoadIndex(t *testing.T) {
 }
 
 func TestAddPages(t *testing.T) {
-	pagesIndex, err := LoadPagesIndex(testDataAbsPath("index.yaml"))
+	pagesIndex, err := LoadPagesIndex(testdata.AbsPath("index.yaml"))
 	assert.NoError(t, err)
 
 	pagesIndex.AddPages([]string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md"})

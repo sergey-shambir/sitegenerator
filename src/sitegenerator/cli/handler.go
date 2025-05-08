@@ -8,7 +8,10 @@ import (
 	"golang.org/x/xerrors"
 
 	"sitegenerator/app"
-	"sitegenerator/data"
+	"sitegenerator/data/config"
+	"sitegenerator/data/convert"
+	"sitegenerator/data/project"
+	"sitegenerator/data/targets"
 )
 
 const (
@@ -24,28 +27,28 @@ func generate(cmd *cobra.Command, args []string) error {
 		return xerrors.Errorf("failed to get working directory: %w", err)
 	}
 
-	config, err := data.ReadConfig(filepath.Join(rootDir, ConfigFileName))
+	config, err := config.ReadConfig(filepath.Join(rootDir, ConfigFileName))
 	if err != nil {
 		return err
 	}
 
-	cache, err := data.LoadGeneratorCache(config.SourceDir, filepath.Join(rootDir, CacheFileName))
+	cache, err := project.LoadGeneratorCache(config.SourceDir, filepath.Join(rootDir, CacheFileName))
 	if err != nil {
 		return err
 	}
 
-	sources, err := data.ReadSources(config.SourceDir, config.IgnoreFileExtensions)
+	sources, err := project.ReadSources(config.SourceDir, config.IgnoreFileExtensions)
 	if err != nil {
 		return err
 	}
 
-	targets, err := data.NewTargets(config.TargetDir)
+	targets, err := targets.NewTargets(config.TargetDir)
 	if err != nil {
 		return err
 	}
 
 	converterRoot := os.Getenv(ConverterRootEnvVar)
-	converter, err := data.NewConverter(converterRoot)
+	converter, err := convert.NewConverter(converterRoot)
 	if err != nil {
 		return err
 	}

@@ -1,25 +1,17 @@
-package data
+package config
 
 import (
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"sitegenerator/data/testdata"
 )
 
-func testDataDir() string {
-	_, filename, _, _ := runtime.Caller(0)
-	return filepath.Join(filepath.Dir(filename), "test_data")
-}
-
-func testDataAbsPath(relativePath string) string {
-	return filepath.Join(testDataDir(), relativePath)
-}
-
 func TestLoadDefaultConfig(t *testing.T) {
-	testDataDir := testDataDir()
-	config, err := ReadConfig(testDataAbsPath("sitegenerator-default.yaml"))
+	testDataDir := testdata.RootDir()
+	config, err := ReadConfig(testdata.AbsPath("sitegenerator-default.yaml"))
 
 	assert.NoError(t, err)
 	assert.Equal(t, &Config{
@@ -30,8 +22,8 @@ func TestLoadDefaultConfig(t *testing.T) {
 }
 
 func TestLoadConfig(t *testing.T) {
-	testDataDir := testDataDir()
-	config, err := ReadConfig(testDataAbsPath("sitegenerator.yaml"))
+	testDataDir := testdata.RootDir()
+	config, err := ReadConfig(testdata.AbsPath("sitegenerator.yaml"))
 
 	assert.NoError(t, err)
 	assert.Equal(t, &Config{

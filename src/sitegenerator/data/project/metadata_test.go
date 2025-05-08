@@ -1,14 +1,16 @@
-package data
+package project
 
 import (
-	"sitegenerator/app"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"sitegenerator/app"
+	"sitegenerator/data/testdata"
 )
 
 func TestGetPageMetadata(t *testing.T) {
-	cache, err := LoadGeneratorCache(testDataDir(), testDataAbsPath("sitegenerator.cache.json"))
+	cache, err := LoadGeneratorCache(testdata.RootDir(), testdata.AbsPath("sitegenerator.cache.json"))
 
 	assert.NoError(t, err)
 	metadata, err := cache.GetPageMetadata("markdown-demo.md")
@@ -22,7 +24,7 @@ func TestGetPageMetadata(t *testing.T) {
 }
 
 func TestLoadPageMetadata(t *testing.T) {
-	metadata, err := ParsePageMetadata(testDataAbsPath("markdown-demo.md"))
+	metadata, err := ParsePageMetadata(testdata.AbsPath("markdown-demo.md"))
 	assert.NoError(t, err)
 	assert.Equal(t, &app.PageMetadata{
 		Title:       "Демонстрация возможностей Markdown",

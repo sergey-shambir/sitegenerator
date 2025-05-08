@@ -1,14 +1,16 @@
-package data
+package project
 
 import (
-	"sitegenerator/app"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"sitegenerator/app"
+	"sitegenerator/data/testdata"
 )
 
 func TestReadSources(t *testing.T) {
-	dir := testDataDir()
+	dir := testdata.RootDir()
 	sources, err := ReadSources(dir, []string{".yaml"})
 
 	assert.NoError(t, err)
