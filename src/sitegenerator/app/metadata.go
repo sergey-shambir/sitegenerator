@@ -1,6 +1,6 @@
 package app
 
-type PageMetadata struct {
+type ArticleMetadata struct {
 	Title       string
 	Description string
 	Category    string
@@ -8,6 +8,6 @@ type PageMetadata struct {
 }
 
 type GeneratorCache interface {
-	GetPageMetadata(path string) (*PageMetadata, error)
+	GetArticleMetadata(path string) (*ArticleMetadata, error)
 	SaveCache() error
 }

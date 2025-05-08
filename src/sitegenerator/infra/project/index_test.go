@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"sitegenerator/app"
 	"sitegenerator/infra/testdata"
 )
 
@@ -15,14 +16,14 @@ func TestLoadIndex(t *testing.T) {
 	sections := pagesIndex.ListSections()
 	assert.Len(t, sections, 2)
 
-	assert.Equal(t, PagesSection{
+	assert.Equal(t, app.PagesSection{
 		Key:     "internal",
 		Title:   "Внутренние статьи",
 		Visible: true,
 		Files:   []string{"markdown-demo.md", "notes.md"},
 	}, sections[0])
 
-	assert.Equal(t, PagesSection{
+	assert.Equal(t, app.PagesSection{
 		Key:     "drafts",
 		Title:   "Черновики",
 		Visible: false,
@@ -38,7 +39,7 @@ func TestAddPages(t *testing.T) {
 
 	sections := pagesIndex.ListSections()
 	assert.Len(t, sections, 2)
-	assert.Equal(t, PagesSection{
+	assert.Equal(t, app.PagesSection{
 		Key:     "drafts",
 		Title:   "Черновики",
 		Visible: false,
@@ -49,7 +50,7 @@ func TestAddPages(t *testing.T) {
 
 	sections = pagesIndex.ListSections()
 	assert.Len(t, sections, 3)
-	assert.Equal(t, PagesSection{
+	assert.Equal(t, app.PagesSection{
 		Key:     "golang",
 		Title:   "golang",
 		Visible: true,

@@ -20,14 +20,14 @@ const metadataMarker = "---"
 type generatorCache struct {
 	pagesDir  string
 	cachePath string
-	pages     map[string]*app.PageMetadata
+	pages     map[string]*app.ArticleMetadata
 }
 
 func LoadGeneratorCache(pagesDir string, cachePath string) (app.GeneratorCache, error) {
 	cache := &generatorCache{
 		pagesDir:  pagesDir,
 		cachePath: cachePath,
-		pages:     make(map[string]*app.PageMetadata),
+		pages:     make(map[string]*app.ArticleMetadata),
 	}
 	data, err := os.ReadFile(cachePath)
 
@@ -44,7 +44,7 @@ func LoadGeneratorCache(pagesDir string, cachePath string) (app.GeneratorCache, 
 	return cache, nil
 }
 
-func (c *generatorCache) GetPageMetadata(path string) (*app.PageMetadata, error) {
+func (c *generatorCache) GetArticleMetadata(path string) (*app.ArticleMetadata, error) {
 	metadata, ok := c.pages[path]
 	if !ok {
 		var err error
@@ -69,7 +69,7 @@ func (c *generatorCache) SaveCache() error {
 	return nil
 }
 
-func ParsePageMetadata(path string) (*app.PageMetadata, error) {
+func ParsePageMetadata(path string) (*app.ArticleMetadata, error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open file '%s': %w", path, err)
@@ -79,7 +79,7 @@ func ParsePageMetadata(path string) (*app.PageMetadata, error) {
 		return nil, xerrors.Errorf("failed to read '%s' metadata: %w", path, err)
 	}
 
-	var metadata app.PageMetadata
+	var metadata app.ArticleMetadata
 	err = yaml.Unmarshal([]byte(contents), &metadata)
 
 	return &metadata, err

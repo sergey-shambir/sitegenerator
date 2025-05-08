@@ -8,38 +8,54 @@ import (
 	"strings"
 
 	yaml "gopkg.in/yaml.v3"
+
+	"sitegenerator/app"
 )
 
-type PagesIndex struct {
-	data []PagesIndexItem
+type pagesIndex struct {
+	data []pagesIndexItem
 }
 
-type PagesSection struct {
-	Key     string
-	Title   string
-	Visible bool
-	Files   []string
-}
-
-type PagesIndexItem struct {
+type pagesIndexItem struct {
 	Key   string
-	Value *PagesIndexSectionData
+	Value *pagesIndexSectionData
 }
 
-func (pi *PagesIndex) UnmarshalYAML(n *yaml.Node) error {
+type pagesIndexSectionData struct {
+	Title   string   `yaml:"title"`
+	Visible *bool    `yaml:"visible"`
+	Files   []string `yaml:"files"`
+}
+
+func LoadPagesIndex(path string) (app.PagesIndex, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var pagesIndex pagesIndex
+	err = yaml.Unmarshal(data, &pagesIndex)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pagesIndex, nil
+}
+
+func (pi *pagesIndex) UnmarshalYAML(n *yaml.Node) error {
 	if n.Kind != yaml.MappingNode {
 		return fmt.Errorf("Unexpected YAML node %s", n.ShortTag())
 	}
 
-	sectionsMap := make([]PagesIndexItem, 0, len(n.Content)/2)
+	sectionsMap := make([]pagesIndexItem, 0, len(n.Content)/2)
 	for i := 0; i < len(n.Content); i += 2 {
 		key := n.Content[i].Value
-		section := new(PagesIndexSectionData)
+		section := new(pagesIndexSectionData)
 		err := n.Content[i+1].Decode(&section)
 		if err != nil {
 			return err
 		}
-		sectionsMap = append(sectionsMap, PagesIndexItem{
+		sectionsMap = append(sectionsMap, pagesIndexItem{
 			Key:   key,
 			Value: section,
 		})
@@ -49,27 +65,22 @@ func (pi *PagesIndex) UnmarshalYAML(n *yaml.Node) error {
 	return nil
 }
 
-type PagesIndexSectionData struct {
-	Title   string   `yaml:"title"`
-	Visible *bool    `yaml:"visible"`
-	Files   []string `yaml:"files"`
+func (pi *pagesIndex) Save(path string) error {
+	data, err := yaml.Marshal(pi.data)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(path, data, 0644)
 }
 
-/*
- * Добавляет страницы, заданные списком путей.
- * Пути отсчитываются от каталога контента сайта.
- */
-func (pi *PagesIndex) AddPages(paths []string) {
+func (pi *pagesIndex) AddPages(paths []string) {
 	for _, path := range paths {
 		pi.AddPage(path)
 	}
 }
 
-/*
- * Добавляет страницу по заданному пути файла.
- * Путь отсчитывается от каталога контента сайта.
- */
-func (pi *PagesIndex) AddPage(path string) {
+func (pi *pagesIndex) AddPage(path string) {
 	dir, filename := filepath.Split(path)
 	dir = strings.TrimSuffix(dir, string(filepath.Separator))
 	section := pi.findOrCreateSection(dir)
@@ -78,27 +89,27 @@ func (pi *PagesIndex) AddPage(path string) {
 	}
 }
 
-func (pi *PagesIndex) findOrCreateSection(dir string) *PagesIndexSectionData {
+func (pi *pagesIndex) findOrCreateSection(dir string) *pagesIndexSectionData {
 	for _, section := range pi.data {
 		if section.Key == dir {
 			return section.Value
 		}
 	}
-	section := &PagesIndexSectionData{
+	section := &pagesIndexSectionData{
 		Title: dir,
 		Files: nil,
 	}
-	pi.data = append(pi.data, PagesIndexItem{
+	pi.data = append(pi.data, pagesIndexItem{
 		Key:   dir,
 		Value: section,
 	})
 	return section
 }
 
-func (pi *PagesIndex) ListSections() []PagesSection {
-	results := make([]PagesSection, len(pi.data))
+func (pi *pagesIndex) ListSections() []app.PagesSection {
+	results := make([]app.PagesSection, len(pi.data))
 	for i, kv := range pi.data {
-		results[i] = PagesSection{
+		results[i] = app.PagesSection{
 			Key:     kv.Key,
 			Title:   kv.Value.Title,
 			Visible: kv.Value.Visible == nil || *kv.Value.Visible,
@@ -107,32 +118,4 @@ func (pi *PagesIndex) ListSections() []PagesSection {
 	}
 
 	return results
-}
-
-func LoadPagesIndex(path string) (*PagesIndex, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	var pagesIndex PagesIndex
-	err = yaml.Unmarshal(data, &pagesIndex)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pagesIndex, nil
-}
-
-func SavePagesIndex(path string, pagesIndex *PagesIndex) error {
-	data, err := savePagesIndexImpl(pagesIndex)
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(path, data, 0644)
-}
-
-func savePagesIndexImpl(pagesIndex *PagesIndex) ([]byte, error) {
-	return yaml.Marshal(pagesIndex.data)
 }

@@ -12,13 +12,13 @@ import (
 
 type ArticlePageData struct {
 	IsVisible bool
-	Meta      *app.PageMetadata
+	Meta      *app.ArticleMetadata
 	Content   template.HTML
 }
 
 type SectionPageItem struct {
 	Url  string
-	Meta app.PageMetadata
+	Meta app.ArticleMetadata
 }
 
 type SectionPageData struct {

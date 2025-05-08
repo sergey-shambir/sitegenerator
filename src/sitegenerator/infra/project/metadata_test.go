@@ -13,9 +13,9 @@ func TestGetPageMetadata(t *testing.T) {
 	cache, err := LoadGeneratorCache(testdata.RootDir(), testdata.AbsPath("sitegenerator.cache.json"))
 
 	assert.NoError(t, err)
-	metadata, err := cache.GetPageMetadata("markdown-demo.md")
+	metadata, err := cache.GetArticleMetadata("markdown-demo.md")
 	assert.NoError(t, err)
-	assert.Equal(t, &app.PageMetadata{
+	assert.Equal(t, &app.ArticleMetadata{
 		Title:       "Демонстрация возможностей Markdown",
 		Description: "Тестовая страница",
 		Category:    "cheatsheet",
@@ -26,7 +26,7 @@ func TestGetPageMetadata(t *testing.T) {
 func TestLoadPageMetadata(t *testing.T) {
 	metadata, err := ParsePageMetadata(testdata.AbsPath("markdown-demo.md"))
 	assert.NoError(t, err)
-	assert.Equal(t, &app.PageMetadata{
+	assert.Equal(t, &app.ArticleMetadata{
 		Title:       "Демонстрация возможностей Markdown",
 		Description: "Тестовая страница",
 		Category:    "cheatsheet",
