@@ -5,9 +5,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sitegenerator/app"
 
 	"golang.org/x/xerrors"
+
+	"sitegenerator/app"
 )
 
 const (

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"sitegenerator/data/testdata"
+	"sitegenerator/infra/testdata"
 )
 
 func TestLoadIndex(t *testing.T) {

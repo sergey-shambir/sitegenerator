@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"sitegenerator/data/testdata"
+	"sitegenerator/infra/testdata"
 )
 
 func TestLoadDefaultConfig(t *testing.T) {

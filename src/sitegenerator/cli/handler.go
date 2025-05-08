@@ -8,10 +8,10 @@ import (
 	"golang.org/x/xerrors"
 
 	"sitegenerator/app"
-	"sitegenerator/data/config"
-	"sitegenerator/data/convert"
-	"sitegenerator/data/project"
-	"sitegenerator/data/targets"
+	"sitegenerator/infra/config"
+	"sitegenerator/infra/convert"
+	"sitegenerator/infra/project"
+	"sitegenerator/infra/targets"
 )
 
 const (

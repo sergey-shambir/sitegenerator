@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"sitegenerator/app"
-	"sitegenerator/data/testdata"
+	"sitegenerator/infra/testdata"
 )
 
 func TestReadSources(t *testing.T) {
