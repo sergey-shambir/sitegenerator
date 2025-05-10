@@ -17,17 +17,45 @@ import (
 
 const metadataMarker = "---"
 
-type generatorCache struct {
-	pagesDir  string
-	cachePath string
-	pages     map[string]*app.ArticleMetadata
+type metadataCacheEntry struct {
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Category    string   `json:"category"`
+	Keywords    []string `json:"keywords"`
 }
 
-func loadGeneratorCache(pagesDir string, cachePath string) (*generatorCache, error) {
-	cache := &generatorCache{
+func fromArticleMetadata(m *app.ArticleMetadata) *metadataCacheEntry {
+	return &metadataCacheEntry{
+		Title:       m.Title,
+		Description: m.Description,
+		Category:    m.Category,
+		Keywords:    m.Keywords,
+	}
+}
+
+func toArticleMetadata(m *metadataCacheEntry) *app.ArticleMetadata {
+	if m == nil {
+		return nil
+	}
+	return &app.ArticleMetadata{
+		Title:       m.Title,
+		Description: m.Description,
+		Category:    m.Category,
+		Keywords:    m.Keywords,
+	}
+}
+
+type metadataCache struct {
+	pagesDir  string
+	cachePath string
+	pages     map[string]*metadataCacheEntry
+}
+
+func loadGeneratorCache(pagesDir string, cachePath string) (*metadataCache, error) {
+	cache := &metadataCache{
 		pagesDir:  pagesDir,
 		cachePath: cachePath,
-		pages:     make(map[string]*app.ArticleMetadata),
+		pages:     make(map[string]*metadataCacheEntry),
 	}
 	data, err := os.ReadFile(cachePath)
 
@@ -44,7 +72,7 @@ func loadGeneratorCache(pagesDir string, cachePath string) (*generatorCache, err
 	return cache, nil
 }
 
-func (c *generatorCache) addArticles(paths []string) error {
+func (c *metadataCache) addArticles(paths []string) error {
 	for _, path := range paths {
 		if _, ok := c.pages[path]; ok {
 			continue
@@ -53,17 +81,17 @@ func (c *generatorCache) addArticles(paths []string) error {
 		if err != nil {
 			return err
 		}
-		c.pages[path] = metadata
+		c.pages[path] = fromArticleMetadata(metadata)
 	}
 	return nil
 }
 
-func (c *generatorCache) getArticleMetadata(path string) *app.ArticleMetadata {
-	return c.pages[path]
+func (c *metadataCache) getArticleMetadata(path string) *app.ArticleMetadata {
+	return toArticleMetadata(c.pages[path])
 }
 
-func (c *generatorCache) save() error {
-	data, err := json.Marshal(c.pages)
+func (c *metadataCache) save() error {
+	data, err := json.MarshalIndent(c.pages, "", "    ")
 	if err != nil {
 		return xerrors.Errorf("failed to format metadata cache: %w", err)
 	}

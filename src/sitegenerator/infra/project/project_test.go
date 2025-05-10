@@ -99,5 +99,3 @@ func TestSaveProject(t *testing.T) {
 		Files:   []string{"unicode.md", "error-handling.md"},
 	}, sections[2])
 }
-
-// TODO: написать тест на добавление статей и сохранение проекта

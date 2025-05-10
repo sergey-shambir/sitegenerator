@@ -8,7 +8,7 @@ import (
 
 type project struct {
 	index *pagesIndex
-	cache *generatorCache
+	cache *metadataCache
 }
 
 func (p *project) AddArticles(paths []string) error {
