@@ -1,26 +1,21 @@
 package app
 
-type PagesSection struct {
-	Key     string
-	Title   string
-	Visible bool
-	Files   []string
-}
-
 type PagesIndex interface {
-	Save(path string) error
+	Save() error
 
 	/*
 	 * Добавляет страницы, заданные списком путей.
 	 * Пути отсчитываются от каталога контента сайта.
 	 */
-	AddPages(paths []string)
+	AddArticles(paths []string)
 
-	/*
-	 * Добавляет страницу по заданному пути файла.
-	 * Путь отсчитывается от каталога контента сайта.
+	/**
+	 * Возвращает раздел, к которому относится статья по заданному пути.
 	 */
-	AddPage(path string)
+	GetArticleSection(path string) *SectionPageData
 
-	ListSections() []PagesSection
+	/**
+	 * Возвращает список всех разделов.
+	 */
+	ListSections() []*SectionPageData
 }

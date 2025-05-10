@@ -10,21 +10,21 @@ import (
 )
 
 func TestLoadIndex(t *testing.T) {
-	pagesIndex, err := LoadPagesIndex(testdata.AbsPath("index.yaml"))
+	pagesIndex, err := loadPagesIndex(testdata.AbsPath("index.yaml"))
 	assert.NoError(t, err)
 
-	sections := pagesIndex.ListSections()
+	sections := pagesIndex.listSections()
 	assert.Len(t, sections, 2)
 
-	assert.Equal(t, app.PagesSection{
-		Key:     "internal",
+	assert.Equal(t, &app.SectionPageData{
+		Path:    "internal",
 		Title:   "Внутренние статьи",
 		Visible: true,
 		Files:   []string{"markdown-demo.md", "notes.md"},
 	}, sections[0])
 
-	assert.Equal(t, app.PagesSection{
-		Key:     "drafts",
+	assert.Equal(t, &app.SectionPageData{
+		Path:    "drafts",
 		Title:   "Черновики",
 		Visible: false,
 		Files:   []string{"acceptance-testing.md"},
@@ -32,28 +32,30 @@ func TestLoadIndex(t *testing.T) {
 }
 
 func TestAddPages(t *testing.T) {
-	pagesIndex, err := LoadPagesIndex(testdata.AbsPath("index.yaml"))
+	pagesIndex, err := loadPagesIndex(testdata.AbsPath("index.yaml"))
 	assert.NoError(t, err)
 
-	pagesIndex.AddPages([]string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md"})
+	pagesIndex.addArticles([]string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md"})
 
-	sections := pagesIndex.ListSections()
+	sections := pagesIndex.listSections()
 	assert.Len(t, sections, 2)
-	assert.Equal(t, app.PagesSection{
-		Key:     "drafts",
+	assert.Equal(t, &app.SectionPageData{
+		Path:    "drafts",
 		Title:   "Черновики",
 		Visible: false,
 		Files:   []string{"acceptance-testing.md", "testing-pyramid.md"},
 	}, sections[1])
 
-	pagesIndex.AddPages([]string{"golang/unicode.md", "golang/error-handling.md"})
+	pagesIndex.addArticles([]string{"golang/unicode.md", "golang/error-handling.md"})
 
-	sections = pagesIndex.ListSections()
+	sections = pagesIndex.listSections()
 	assert.Len(t, sections, 3)
-	assert.Equal(t, app.PagesSection{
-		Key:     "golang",
+	assert.Equal(t, &app.SectionPageData{
+		Path:    "golang",
 		Title:   "golang",
 		Visible: true,
 		Files:   []string{"unicode.md", "error-handling.md"},
 	}, sections[2])
 }
+
+// TODO: написать тест на сохранение кэша

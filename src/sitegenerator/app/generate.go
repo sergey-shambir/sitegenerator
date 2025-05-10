@@ -11,22 +11,31 @@ type Generator struct {
 	sources   Sources
 	targets   Targets
 	converter Converter
-	cache     GeneratorCache
+	project   Project
 	logger    GeneratorLogger
 }
 
-func NewGenerator(sources Sources, targets Targets, converter Converter, cache GeneratorCache, logger GeneratorLogger) *Generator {
+func NewGenerator(sources Sources, targets Targets, converter Converter, project Project, logger GeneratorLogger) *Generator {
 	return &Generator{
 		sources:   sources,
 		targets:   targets,
 		converter: converter,
-		cache:     cache,
+		project:   project,
 		logger:    logger,
 	}
 }
 
 func (g *Generator) Generate() error {
-	err := g.copyAssets()
+	// TODO: convert markdown pages using templates
+	// TODO: generate section pages
+	// TODO: generate main page (index.html)
+
+	err := g.project.AddArticles(g.sources.ListFiles(Markdown))
+	if err != nil {
+		return err
+	}
+
+	err = g.copyAssets()
 	if err != nil {
 		return err
 	}
@@ -41,10 +50,11 @@ func (g *Generator) Generate() error {
 		return err
 	}
 
-	err = g.cache.SaveCache()
+	err = g.project.Save()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

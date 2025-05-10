@@ -23,7 +23,7 @@ type generatorCache struct {
 	pages     map[string]*app.ArticleMetadata
 }
 
-func LoadGeneratorCache(pagesDir string, cachePath string) (app.GeneratorCache, error) {
+func loadGeneratorCache(pagesDir string, cachePath string) (*generatorCache, error) {
 	cache := &generatorCache{
 		pagesDir:  pagesDir,
 		cachePath: cachePath,
@@ -44,20 +44,25 @@ func LoadGeneratorCache(pagesDir string, cachePath string) (app.GeneratorCache, 
 	return cache, nil
 }
 
-func (c *generatorCache) GetArticleMetadata(path string) (*app.ArticleMetadata, error) {
-	metadata, ok := c.pages[path]
-	if !ok {
-		var err error
-		metadata, err = ParsePageMetadata(filepath.Join(c.pagesDir, path))
+func (c *generatorCache) addArticles(paths []string) error {
+	for _, path := range paths {
+		if _, ok := c.pages[path]; ok {
+			continue
+		}
+		metadata, err := parsePageMetadata(filepath.Join(c.pagesDir, path))
 		if err != nil {
-			return nil, err
+			return err
 		}
 		c.pages[path] = metadata
 	}
-	return metadata, nil
+	return nil
 }
 
-func (c *generatorCache) SaveCache() error {
+func (c *generatorCache) getArticleMetadata(path string) *app.ArticleMetadata {
+	return c.pages[path]
+}
+
+func (c *generatorCache) save() error {
 	data, err := json.Marshal(c.pages)
 	if err != nil {
 		return xerrors.Errorf("failed to format metadata cache: %w", err)
@@ -69,7 +74,7 @@ func (c *generatorCache) SaveCache() error {
 	return nil
 }
 
-func ParsePageMetadata(path string) (*app.ArticleMetadata, error) {
+func parsePageMetadata(path string) (*app.ArticleMetadata, error) {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open file '%s': %w", path, err)

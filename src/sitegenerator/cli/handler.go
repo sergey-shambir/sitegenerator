@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	IndexFileName  = "index.yaml"
 	ConfigFileName = "sitegenerator.yaml"
 	CacheFileName  = "sitegenerator.cache.json"
 
@@ -32,7 +33,11 @@ func generate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	cache, err := project.LoadGeneratorCache(config.SourceDir, filepath.Join(rootDir, CacheFileName))
+	proj, err := project.LoadProject(
+		config.SourceDir,
+		filepath.Join(config.SourceDir, IndexFileName),
+		filepath.Join(rootDir, CacheFileName),
+	)
 	if err != nil {
 		return err
 	}
@@ -55,7 +60,7 @@ func generate(cmd *cobra.Command, args []string) error {
 
 	logger := newGeneratorLogger()
 
-	generator := app.NewGenerator(sources, targets, converter, cache, logger)
+	generator := app.NewGenerator(sources, targets, converter, proj, logger)
 
 	return generator.Generate()
 }

@@ -7,13 +7,15 @@ import (
 	"slices"
 	"strings"
 
+	"golang.org/x/xerrors"
 	yaml "gopkg.in/yaml.v3"
 
 	"sitegenerator/app"
 )
 
 type pagesIndex struct {
-	data []pagesIndexItem
+	path  string
+	items []pagesIndexItem
 }
 
 type pagesIndexItem struct {
@@ -23,26 +25,15 @@ type pagesIndexItem struct {
 
 type pagesIndexSectionData struct {
 	Title   string   `yaml:"title"`
-	Visible *bool    `yaml:"visible"`
+	Visible *bool    `yaml:"visible,omitempty"`
 	Files   []string `yaml:"files"`
 }
 
-func LoadPagesIndex(path string) (app.PagesIndex, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	var pagesIndex pagesIndex
-	err = yaml.Unmarshal(data, &pagesIndex)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pagesIndex, nil
+type pagesIndexData struct {
+	items []pagesIndexItem
 }
 
-func (pi *pagesIndex) UnmarshalYAML(n *yaml.Node) error {
+func (pi *pagesIndexData) UnmarshalYAML(n *yaml.Node) error {
 	if n.Kind != yaml.MappingNode {
 		return fmt.Errorf("Unexpected YAML node %s", n.ShortTag())
 	}
@@ -61,26 +52,67 @@ func (pi *pagesIndex) UnmarshalYAML(n *yaml.Node) error {
 		})
 	}
 
-	pi.data = sectionsMap
+	pi.items = sectionsMap
 	return nil
 }
 
-func (pi *pagesIndex) Save(path string) error {
-	data, err := yaml.Marshal(pi.data)
+func (pi *pagesIndexData) MarshalYAML() (any, error) {
+	node := &yaml.Node{
+		Kind: yaml.MappingNode,
+	}
+	for _, item := range pi.items {
+		keyNode := &yaml.Node{
+			Kind:  yaml.ScalarNode,
+			Value: item.Key,
+		}
+		valueNode := &yaml.Node{}
+		if err := valueNode.Encode(item.Value); err != nil {
+			return nil, xerrors.Errorf("could not encode to YAML property %s: %w", item.Key, err)
+		}
+
+		node.Content = append(node.Content, keyNode, valueNode)
+	}
+	return node, nil
+}
+
+func loadPagesIndex(path string) (*pagesIndex, error) {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var data pagesIndexData
+	err = yaml.Unmarshal(contents, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pagesIndex{
+		path:  path,
+		items: data.items,
+	}, nil
+}
+
+func (pi *pagesIndex) save() error {
+	data := &pagesIndexData{
+		items: pi.items,
+	}
+
+	bytes, err := yaml.Marshal(data)
 	if err != nil {
 		return err
 	}
 
-	return os.WriteFile(path, data, 0644)
+	return os.WriteFile(pi.path, bytes, 0644)
 }
 
-func (pi *pagesIndex) AddPages(paths []string) {
+func (pi *pagesIndex) addArticles(paths []string) {
 	for _, path := range paths {
-		pi.AddPage(path)
+		pi.addArticle(path)
 	}
 }
 
-func (pi *pagesIndex) AddPage(path string) {
+func (pi *pagesIndex) addArticle(path string) {
 	dir, filename := filepath.Split(path)
 	dir = strings.TrimSuffix(dir, string(filepath.Separator))
 	section := pi.findOrCreateSection(dir)
@@ -90,7 +122,7 @@ func (pi *pagesIndex) AddPage(path string) {
 }
 
 func (pi *pagesIndex) findOrCreateSection(dir string) *pagesIndexSectionData {
-	for _, section := range pi.data {
+	for _, section := range pi.items {
 		if section.Key == dir {
 			return section.Value
 		}
@@ -99,23 +131,39 @@ func (pi *pagesIndex) findOrCreateSection(dir string) *pagesIndexSectionData {
 		Title: dir,
 		Files: nil,
 	}
-	pi.data = append(pi.data, pagesIndexItem{
+	pi.items = append(pi.items, pagesIndexItem{
 		Key:   dir,
 		Value: section,
 	})
 	return section
 }
 
-func (pi *pagesIndex) ListSections() []app.PagesSection {
-	results := make([]app.PagesSection, len(pi.data))
-	for i, kv := range pi.data {
-		results[i] = app.PagesSection{
-			Key:     kv.Key,
-			Title:   kv.Value.Title,
-			Visible: kv.Value.Visible == nil || *kv.Value.Visible,
-			Files:   kv.Value.Files,
+func (pi *pagesIndex) getArticleSection(path string) *app.SectionPageData {
+	dir := filepath.Dir(path)
+	dir = strings.TrimSuffix(dir, string(filepath.Separator))
+
+	for _, kv := range pi.items {
+		if kv.Key == dir {
+			return toSectionPageData(kv)
 		}
+	}
+	return nil
+}
+
+func (pi *pagesIndex) listSections() []*app.SectionPageData {
+	results := make([]*app.SectionPageData, len(pi.items))
+	for i, kv := range pi.items {
+		results[i] = toSectionPageData(kv)
 	}
 
 	return results
+}
+
+func toSectionPageData(i pagesIndexItem) *app.SectionPageData {
+	return &app.SectionPageData{
+		Path:    i.Key,
+		Title:   i.Value.Title,
+		Visible: i.Value.Visible == nil || *i.Value.Visible,
+		Files:   i.Value.Files,
+	}
 }

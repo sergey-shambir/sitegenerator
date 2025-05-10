@@ -16,7 +16,7 @@ func TestReadSources(t *testing.T) {
 	assert.NoError(t, err)
 
 	expectedImages := []string{"images/1.gif", "images/2.jpg", "images/3.webp", "images/4.png"}
-	expectedMarkdown := []string{"markdown-demo.md"}
+	expectedMarkdown := []string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md", "golang/error-handling.md", "golang/unicode.md", "internal/markdown-demo.md", "internal/notes.md"}
 	expectedSass := []string{"main.scss"}
 
 	assert.Equal(t, dir, sources.Root())
