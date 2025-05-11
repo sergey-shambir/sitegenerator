@@ -14,6 +14,13 @@ func TestLoadProject(t *testing.T) {
 	project, err := LoadProject(testdata.ContentDir(), testdata.ContentPath("index.yaml"), testdata.ContentPath("sitegenerator.cache.json"))
 	assert.NoError(t, err)
 
+	err = project.AddArticles([]string{
+		"internal/markdown-demo.md",
+		"internal/notes.md",
+		"drafts/acceptance-testing.md",
+	})
+	assert.NoError(t, err)
+
 	sections := project.ListSections()
 
 	assert.Equal(t, &app.SectionPageDetails{
@@ -35,7 +42,10 @@ func TestEditProject(t *testing.T) {
 	project, err := LoadProject(testdata.ContentDir(), testdata.ContentPath("index.yaml"), testdata.ContentPath("sitegenerator.cache.json"))
 	assert.NoError(t, err)
 
-	err = project.AddArticles([]string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md"})
+	err = project.AddArticles([]string{
+		"drafts/acceptance-testing.md",
+		"drafts/testing-pyramid.md",
+	})
 	assert.NoError(t, err)
 
 	sections := project.ListSections()
@@ -48,7 +58,10 @@ func TestEditProject(t *testing.T) {
 		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.md", "drafts/testing-pyramid.md"),
 	}, sections[1])
 
-	err = project.AddArticles([]string{"golang/unicode.md", "golang/error-handling.md"})
+	err = project.AddArticles([]string{
+		"golang/unicode.md",
+		"golang/error-handling.md",
+	})
 	assert.NoError(t, err)
 
 	sections = project.ListSections()
@@ -68,7 +81,14 @@ func TestSaveProject(t *testing.T) {
 	project, err := LoadProject(tempDir, filepath.Join(tempDir, "index.yaml"), filepath.Join(tempDir, "sitegenerator.cache.json"))
 	assert.NoError(t, err)
 
-	err = project.AddArticles([]string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md", "golang/unicode.md", "golang/error-handling.md"})
+	err = project.AddArticles([]string{
+		"internal/markdown-demo.md",
+		"internal/notes.md",
+		"drafts/acceptance-testing.md",
+		"drafts/testing-pyramid.md",
+		"golang/unicode.md",
+		"golang/error-handling.md",
+	})
 	assert.NoError(t, err)
 
 	err = project.Save()

@@ -1,6 +1,8 @@
 package project
 
 import (
+	"path/filepath"
+
 	"golang.org/x/xerrors"
 
 	"sitegenerator/app"
@@ -45,9 +47,8 @@ func (p *project) GetArticleSection(path string) *app.SectionPageDetails {
 func (p *project) toArticlePageDetails(section *pagesIndexItem) *app.SectionPageDetails {
 	pages := make([]app.UrlAndValue[*app.ArticleMetadata], len(section.Files))
 	for i, file := range section.Files {
-		urlPath := "/" + section.Key + "/" + file
-		pages[i].Url = urlPath
-		pages[i].Value = p.cache.getArticleMetadata(urlPath)
+		pages[i].Url = "/" + section.Key + "/" + file
+		pages[i].Value = p.cache.getArticleMetadata(filepath.Join(section.Key, file))
 	}
 
 	return &app.SectionPageDetails{

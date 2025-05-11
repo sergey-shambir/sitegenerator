@@ -8,9 +8,13 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func ContentDir() string {
+func testDataDir() string {
 	_, filename, _, _ := runtime.Caller(0)
-	return filepath.Join(filepath.Dir(filename), "content")
+	return filepath.Dir(filename)
+}
+
+func ContentDir() string {
+	return filepath.Join(testDataDir(), "content")
 }
 
 func ContentPath(relativePath string) string {
@@ -27,4 +31,12 @@ func CopyContentToTempDir() (string, error) {
 		return "", xerrors.Errorf("failed to copy files into temp directory: %w", dir)
 	}
 	return dir, nil
+}
+
+func TemplatesDir() string {
+	return filepath.Join(testDataDir(), "templates")
+}
+
+func ExpectedHtmlDir() string {
+	return filepath.Join(testDataDir(), "expected_html")
 }
