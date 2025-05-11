@@ -14,8 +14,8 @@ type siteTemplates struct {
 	tpl *template.Template
 }
 
-func ParseSiteTemplates(templatesDir string) (app.SiteTemplates, error) {
-	funcs := createFuncMap()
+func ParseSiteTemplates(callbacks FuncCallbacks, templatesDir string) (app.SiteTemplates, error) {
+	funcs := createFuncMap(callbacks)
 	tpl, err := template.New("sitegenerator").Funcs(funcs).ParseGlob(
 		filepath.Join(templatesDir, "*.html"),
 	)
@@ -38,7 +38,17 @@ func (t *siteTemplates) GenerateIndexPage(d app.IndexPageData) ([]byte, error) {
 	return t.generatePage("index_page.html", toIndexPageVars(d))
 }
 
-func (t *siteTemplates) generatePage(name string, data any) ([]byte, error) {
+func (t *siteTemplates) generatePage(name string, data any) (bytes []byte, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = xerrors.Errorf("could not generate page %q: %w", name, r)
+		}
+	}()
+	bytes, err = t.generatePageImpl(name, data)
+	return
+}
+
+func (t *siteTemplates) generatePageImpl(name string, data any) ([]byte, error) {
 	var buffer bytes.Buffer
 	err := t.tpl.Lookup(name).Execute(&buffer, data)
 	if err != nil {
