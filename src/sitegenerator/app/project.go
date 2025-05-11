@@ -10,23 +10,10 @@ type ArticleMetadata struct {
 	Keywords    []string
 }
 
-type ArticlePageData struct {
-	Path    string
-	Visible bool
-	Meta    ArticleMetadata
-}
-
-type SectionPageData struct {
-	Path    string
-	Title   string
-	Visible bool
-	Files   []string
-}
-
 type Project interface {
 	AddArticles(paths []string) error
 	Save() error
 
-	GetArticleSection(path string) *SectionPageData
-	ListSections() []*SectionPageData
+	GetArticleSection(path string) *SectionPageDetails
+	ListSections() []*SectionPageDetails
 }

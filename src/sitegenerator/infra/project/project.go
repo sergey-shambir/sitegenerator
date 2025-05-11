@@ -28,12 +28,34 @@ func (p *project) Save() error {
 	return p.cache.save()
 }
 
-func (p *project) ListSections() []*app.SectionPageData {
-	return p.index.listSections()
+func (p *project) ListSections() []*app.SectionPageDetails {
+	sections := p.index.listSections()
+	results := make([]*app.SectionPageDetails, len(sections))
+	for i, section := range sections {
+		results[i] = p.toArticlePageDetails(section)
+	}
+	return results
 }
 
-func (p *project) GetArticleSection(path string) *app.SectionPageData {
-	return p.index.getArticleSection(path)
+func (p *project) GetArticleSection(path string) *app.SectionPageDetails {
+	section := p.index.getArticleSection(path)
+	return p.toArticlePageDetails(section)
+}
+
+func (p *project) toArticlePageDetails(section *pagesIndexItem) *app.SectionPageDetails {
+	pages := make([]app.UrlAndValue[*app.ArticleMetadata], len(section.Files))
+	for i, file := range section.Files {
+		urlPath := "/" + section.Key + "/" + file
+		pages[i].Url = urlPath
+		pages[i].Value = p.cache.getArticleMetadata(urlPath)
+	}
+
+	return &app.SectionPageDetails{
+		Url:       "/" + section.Key,
+		IsVisible: section.Visible,
+		Title:     section.Title,
+		Pages:     pages,
+	}
 }
 
 func LoadProject(sourceDir, indexPath, cachePath string) (app.Project, error) {

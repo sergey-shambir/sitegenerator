@@ -12,10 +12,10 @@ type PagesIndex interface {
 	/**
 	 * Возвращает раздел, к которому относится статья по заданному пути.
 	 */
-	GetArticleSection(path string) *SectionPageData
+	GetArticleSection(path string) *SectionPageDetails
 
 	/**
 	 * Возвращает список всех разделов.
 	 */
-	ListSections() []*SectionPageData
+	ListSections() []*SectionPageDetails
 }

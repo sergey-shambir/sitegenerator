@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetPageMetadata(t *testing.T) {
-	cache, err := loadGeneratorCache(testdata.RootDir(), testdata.AbsPath("sitegenerator.cache.json"))
+	cache, err := loadGeneratorCache(testdata.ContentDir(), testdata.ContentPath("sitegenerator.cache.json"))
 	assert.NoError(t, err)
 
 	metadata := cache.getArticleMetadata("markdown-demo.md")
@@ -29,7 +29,7 @@ func TestGetPageMetadata(t *testing.T) {
 }
 
 func TestLoadPageMetadata(t *testing.T) {
-	metadata, err := parsePageMetadata(testdata.AbsPath("internal/markdown-demo.md"))
+	metadata, err := parsePageMetadata(testdata.ContentPath("internal/markdown-demo.md"))
 	assert.NoError(t, err)
 	assert.Equal(t, &app.ArticleMetadata{
 		Title:       "Демонстрация возможностей Markdown",

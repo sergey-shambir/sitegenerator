@@ -10,8 +10,8 @@ import (
 )
 
 func TestLoadDefaultConfig(t *testing.T) {
-	testDataDir := testdata.RootDir()
-	config, err := ReadConfig(testdata.AbsPath("sitegenerator-default.yaml"))
+	testDataDir := testdata.ContentDir()
+	config, err := ReadConfig(testdata.ContentPath("sitegenerator-default.yaml"))
 
 	assert.NoError(t, err)
 	assert.Equal(t, &Config{
@@ -22,8 +22,8 @@ func TestLoadDefaultConfig(t *testing.T) {
 }
 
 func TestLoadConfig(t *testing.T) {
-	testDataDir := testdata.RootDir()
-	config, err := ReadConfig(testdata.AbsPath("sitegenerator.yaml"))
+	testDataDir := testdata.ContentDir()
+	config, err := ReadConfig(testdata.ContentPath("sitegenerator.yaml"))
 
 	assert.NoError(t, err)
 	assert.Equal(t, &Config{

@@ -10,7 +10,7 @@ import (
 )
 
 func TestReadSources(t *testing.T) {
-	dir := testdata.RootDir()
+	dir := testdata.ContentDir()
 	sources, err := ReadSources(dir, []string{".yaml"})
 
 	assert.NoError(t, err)

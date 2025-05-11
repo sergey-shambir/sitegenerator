@@ -11,28 +11,28 @@ import (
 )
 
 func TestLoadProject(t *testing.T) {
-	project, err := LoadProject(testdata.RootDir(), testdata.AbsPath("index.yaml"), testdata.AbsPath("sitegenerator.cache.json"))
+	project, err := LoadProject(testdata.ContentDir(), testdata.ContentPath("index.yaml"), testdata.ContentPath("sitegenerator.cache.json"))
 	assert.NoError(t, err)
 
 	sections := project.ListSections()
 
-	assert.Equal(t, &app.SectionPageData{
-		Path:    "internal",
-		Title:   "Внутренние статьи",
-		Visible: true,
-		Files:   []string{"markdown-demo.md", "notes.md"},
+	assert.Equal(t, &app.SectionPageDetails{
+		Url:       "/internal",
+		Title:     "Внутренние статьи",
+		IsVisible: true,
+		Pages:     testdata.ExpectedArticlePages("internal/markdown-demo.md", "internal/notes.md"),
 	}, sections[0])
 
-	assert.Equal(t, &app.SectionPageData{
-		Path:    "drafts",
-		Title:   "Черновики",
-		Visible: false,
-		Files:   []string{"acceptance-testing.md"},
+	assert.Equal(t, &app.SectionPageDetails{
+		Url:       "/drafts",
+		Title:     "Черновики",
+		IsVisible: false,
+		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.md"),
 	}, sections[1])
 }
 
 func TestEditProject(t *testing.T) {
-	project, err := LoadProject(testdata.RootDir(), testdata.AbsPath("index.yaml"), testdata.AbsPath("sitegenerator.cache.json"))
+	project, err := LoadProject(testdata.ContentDir(), testdata.ContentPath("index.yaml"), testdata.ContentPath("sitegenerator.cache.json"))
 	assert.NoError(t, err)
 
 	err = project.AddArticles([]string{"drafts/acceptance-testing.md", "drafts/testing-pyramid.md"})
@@ -40,11 +40,12 @@ func TestEditProject(t *testing.T) {
 
 	sections := project.ListSections()
 	assert.Len(t, sections, 2)
-	assert.Equal(t, &app.SectionPageData{
-		Path:    "drafts",
-		Title:   "Черновики",
-		Visible: false,
-		Files:   []string{"acceptance-testing.md", "testing-pyramid.md"},
+
+	assert.Equal(t, &app.SectionPageDetails{
+		Url:       "/drafts",
+		Title:     "Черновики",
+		IsVisible: false,
+		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.md", "drafts/testing-pyramid.md"),
 	}, sections[1])
 
 	err = project.AddArticles([]string{"golang/unicode.md", "golang/error-handling.md"})
@@ -52,16 +53,16 @@ func TestEditProject(t *testing.T) {
 
 	sections = project.ListSections()
 	assert.Len(t, sections, 3)
-	assert.Equal(t, &app.SectionPageData{
-		Path:    "golang",
-		Title:   "golang",
-		Visible: true,
-		Files:   []string{"unicode.md", "error-handling.md"},
+	assert.Equal(t, &app.SectionPageDetails{
+		Url:       "/golang",
+		Title:     "golang",
+		IsVisible: true,
+		Pages:     testdata.ExpectedArticlePages("golang/unicode.md", "golang/error-handling.md"),
 	}, sections[2])
 }
 
 func TestSaveProject(t *testing.T) {
-	tempDir, err := testdata.CopyToTempDir()
+	tempDir, err := testdata.CopyContentToTempDir()
 	assert.NoError(t, err)
 
 	project, err := LoadProject(tempDir, filepath.Join(tempDir, "index.yaml"), filepath.Join(tempDir, "sitegenerator.cache.json"))
@@ -78,24 +79,24 @@ func TestSaveProject(t *testing.T) {
 	assert.NoError(t, err)
 
 	sections := project.ListSections()
-	assert.Equal(t, &app.SectionPageData{
-		Path:    "internal",
-		Title:   "Внутренние статьи",
-		Visible: true,
-		Files:   []string{"markdown-demo.md", "notes.md"},
+	assert.Equal(t, &app.SectionPageDetails{
+		Url:       "/internal",
+		Title:     "Внутренние статьи",
+		IsVisible: true,
+		Pages:     testdata.ExpectedArticlePages("internal/markdown-demo.md", "internal/notes.md"),
 	}, sections[0])
 	assert.Len(t, sections, 3)
-	assert.Equal(t, &app.SectionPageData{
-		Path:    "drafts",
-		Title:   "Черновики",
-		Visible: false,
-		Files:   []string{"acceptance-testing.md", "testing-pyramid.md"},
+	assert.Equal(t, &app.SectionPageDetails{
+		Url:       "/drafts",
+		Title:     "Черновики",
+		IsVisible: false,
+		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.md", "drafts/testing-pyramid.md"),
 	}, sections[1])
 	sections = project.ListSections()
-	assert.Equal(t, &app.SectionPageData{
-		Path:    "golang",
-		Title:   "golang",
-		Visible: true,
-		Files:   []string{"unicode.md", "error-handling.md"},
+	assert.Equal(t, &app.SectionPageDetails{
+		Url:       "/golang",
+		Title:     "golang",
+		IsVisible: true,
+		Pages:     testdata.ExpectedArticlePages("golang/unicode.md", "golang/error-handling.md"),
 	}, sections[2])
 }

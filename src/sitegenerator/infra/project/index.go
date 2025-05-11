@@ -9,28 +9,22 @@ import (
 
 	"golang.org/x/xerrors"
 	yaml "gopkg.in/yaml.v3"
-
-	"sitegenerator/app"
 )
 
 type pagesIndex struct {
 	path  string
-	items []pagesIndexItem
+	items []*pagesIndexItem
 }
 
 type pagesIndexItem struct {
-	Key   string
-	Value *pagesIndexSectionData
-}
-
-type pagesIndexSectionData struct {
+	Key     string   `yaml:"-"`
 	Title   string   `yaml:"title"`
-	Visible *bool    `yaml:"visible,omitempty"`
+	Visible bool     `yaml:"visible"`
 	Files   []string `yaml:"files"`
 }
 
 type pagesIndexData struct {
-	items []pagesIndexItem
+	items []*pagesIndexItem
 }
 
 func (pi *pagesIndexData) UnmarshalYAML(n *yaml.Node) error {
@@ -38,18 +32,18 @@ func (pi *pagesIndexData) UnmarshalYAML(n *yaml.Node) error {
 		return fmt.Errorf("Unexpected YAML node %s", n.ShortTag())
 	}
 
-	sectionsMap := make([]pagesIndexItem, 0, len(n.Content)/2)
+	sectionsMap := make([]*pagesIndexItem, 0, len(n.Content)/2)
 	for i := 0; i < len(n.Content); i += 2 {
 		key := n.Content[i].Value
-		section := new(pagesIndexSectionData)
+		section := &pagesIndexItem{
+			Key:     key,
+			Visible: true,
+		}
 		err := n.Content[i+1].Decode(&section)
 		if err != nil {
 			return err
 		}
-		sectionsMap = append(sectionsMap, pagesIndexItem{
-			Key:   key,
-			Value: section,
-		})
+		sectionsMap = append(sectionsMap, section)
 	}
 
 	pi.items = sectionsMap
@@ -66,7 +60,7 @@ func (pi *pagesIndexData) MarshalYAML() (any, error) {
 			Value: item.Key,
 		}
 		valueNode := &yaml.Node{}
-		if err := valueNode.Encode(item.Value); err != nil {
+		if err := valueNode.Encode(item); err != nil {
 			return nil, xerrors.Errorf("could not encode to YAML property %s: %w", item.Key, err)
 		}
 
@@ -121,49 +115,34 @@ func (pi *pagesIndex) addArticle(path string) {
 	}
 }
 
-func (pi *pagesIndex) findOrCreateSection(dir string) *pagesIndexSectionData {
+func (pi *pagesIndex) findOrCreateSection(dir string) *pagesIndexItem {
 	for _, section := range pi.items {
 		if section.Key == dir {
-			return section.Value
+			return section
 		}
 	}
-	section := &pagesIndexSectionData{
-		Title: dir,
-		Files: nil,
+	section := &pagesIndexItem{
+		Key:     dir,
+		Visible: true,
+		Title:   dir,
+		Files:   nil,
 	}
-	pi.items = append(pi.items, pagesIndexItem{
-		Key:   dir,
-		Value: section,
-	})
+	pi.items = append(pi.items, section)
 	return section
 }
 
-func (pi *pagesIndex) getArticleSection(path string) *app.SectionPageData {
+func (pi *pagesIndex) getArticleSection(path string) *pagesIndexItem {
 	dir := filepath.Dir(path)
 	dir = strings.TrimSuffix(dir, string(filepath.Separator))
 
-	for _, kv := range pi.items {
-		if kv.Key == dir {
-			return toSectionPageData(kv)
+	for _, item := range pi.items {
+		if item.Key == dir {
+			return item
 		}
 	}
 	return nil
 }
 
-func (pi *pagesIndex) listSections() []*app.SectionPageData {
-	results := make([]*app.SectionPageData, len(pi.items))
-	for i, kv := range pi.items {
-		results[i] = toSectionPageData(kv)
-	}
-
-	return results
-}
-
-func toSectionPageData(i pagesIndexItem) *app.SectionPageData {
-	return &app.SectionPageData{
-		Path:    i.Key,
-		Title:   i.Value.Title,
-		Visible: i.Value.Visible == nil || *i.Value.Visible,
-		Files:   i.Value.Files,
-	}
+func (pi *pagesIndex) listSections() []*pagesIndexItem {
+	return pi.items
 }
