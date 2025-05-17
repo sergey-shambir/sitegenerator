@@ -31,7 +31,7 @@ func join(texts []string, separator string) string {
 // Добавляет к URL Path ресурса его hash-сумму,
 // чтобы при изменении ресурса кэш браузера не возвращал его старую версию.
 func addAssetHash(callbacks FuncCallbacks, urlPath string) string {
-	path := filepath.Join(callbacks.ContentRoot(), urlPathToPath(urlPath))
+	path := filepath.Join(callbacks.OutputRoot(), urlPathToPath(urlPath))
 	hash, err := computeFileHash(path)
 	if err != nil {
 		panic(err)

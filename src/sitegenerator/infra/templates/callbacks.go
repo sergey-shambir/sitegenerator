@@ -1,22 +1,22 @@
 package templates
 
 type FuncCallbacks interface {
-	ContentRoot() string
+	OutputRoot() string
 	AddAssetHash(urlPath string, hash string) string
 }
 
-func CreateFuncCallbacks(contentRoot string) FuncCallbacks {
+func CreateFuncCallbacks(outputRoot string) FuncCallbacks {
 	return &defaultFuncCallbacks{
-		contentRoot: contentRoot,
+		outputRoot: outputRoot,
 	}
 }
 
 type defaultFuncCallbacks struct {
-	contentRoot string
+	outputRoot string
 }
 
-func (fo *defaultFuncCallbacks) ContentRoot() string {
-	return fo.contentRoot
+func (fo *defaultFuncCallbacks) OutputRoot() string {
+	return fo.outputRoot
 }
 
 func (fo *defaultFuncCallbacks) AddAssetHash(urlPath string, hash string) string {

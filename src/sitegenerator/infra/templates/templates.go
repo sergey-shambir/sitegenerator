@@ -11,19 +11,26 @@ import (
 )
 
 type siteTemplates struct {
-	tpl *template.Template
+	templatesDir string
+	templates    *template.Template
 }
 
 func ParseSiteTemplates(callbacks FuncCallbacks, templatesDir string) (app.SiteTemplates, error) {
 	funcs := createFuncMap(callbacks)
-	tpl, err := template.New("sitegenerator").Funcs(funcs).ParseGlob(
+	templates := template.New("sitegenerator").Funcs(funcs)
+
+	_, err := templates.ParseGlob(
 		filepath.Join(templatesDir, "*.html"),
 	)
+
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse site templates at '%s': %w", templatesDir, err)
+		return nil, xerrors.Errorf("failed to parse site templates at %q: %w", templatesDir, err)
 	}
 
-	return &siteTemplates{tpl}, nil
+	return &siteTemplates{
+		templatesDir: templatesDir,
+		templates:    templates,
+	}, nil
 }
 
 func (t *siteTemplates) GenerateArticlePage(d app.ArticlePageDetails) ([]byte, error) {
@@ -49,10 +56,15 @@ func (t *siteTemplates) generatePage(name string, data any) (bytes []byte, err e
 }
 
 func (t *siteTemplates) generatePageImpl(name string, data any) ([]byte, error) {
+	template := t.templates.Lookup(name)
+	if template == nil {
+		return nil, xerrors.Errorf("could not find template %q at %q", name, t.templatesDir)
+	}
+
 	var buffer bytes.Buffer
-	err := t.tpl.Lookup(name).Execute(&buffer, data)
+	err := template.Execute(&buffer, data)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to apply site template '%s': %w", name, err)
+		return nil, xerrors.Errorf("could not execute template %q: %w", name, err)
 	}
 	return buffer.Bytes(), nil
 }

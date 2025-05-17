@@ -40,12 +40,12 @@ func (g *Generator) Generate() error {
 		return err
 	}
 
-	err = g.convertMarkdownFiles()
+	err = g.convertSassFiles()
 	if err != nil {
 		return err
 	}
 
-	err = g.convertSassFiles()
+	err = g.convertMarkdownFiles()
 	if err != nil {
 		return err
 	}
@@ -58,6 +58,7 @@ func (g *Generator) Generate() error {
 	return nil
 }
 
+// NOTE: Конвертация должна быть в конце, чтобы иметь доступ к файлам, которые будут созданы в процессе конвертации
 func (g *Generator) convertMarkdownFiles() error {
 	for _, path := range g.sources.ListFiles(Markdown) {
 		err := g.convertMarkdownFile(path)

@@ -41,7 +41,6 @@ type indexPageVars struct {
 
 func toIndexPageVars(d app.IndexPageData) *indexPageVars {
 	return &indexPageVars{
-		Title:    d.Title,
 		Sections: d.Sections,
 	}
 }

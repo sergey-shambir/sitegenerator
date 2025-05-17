@@ -23,7 +23,6 @@ type SectionPageDetails struct {
 
 // IndexPageData - данные для генерации главной страницы сайта.
 type IndexPageData struct {
-	Title    string
 	Sections []UrlAndValue[string]
 }
 

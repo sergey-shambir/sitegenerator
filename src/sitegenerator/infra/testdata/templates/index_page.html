@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf8" />
+    <title>Разделы сайта - atdd.ru</title>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {{ template "partials_head_resources.html" . }}
+</head>
+
+<body>
+    <div class="site-content">
+        {{ template "partials_header.html" . }}
+        <article>
+            <h1>Разделы сайта</h1>
+            {{ range .Sections }}
+            <p>
+                <a href="{{ .Url }}">{{ .Value }}</a>
+            </p>
+            {{ end }}
+        </article>
+        {{ template "partials_footer.html" . }}
+    </div>
+</body>
+
+</html>

@@ -16,10 +16,12 @@
     <meta name="robots" content="noindex" />
     <meta name="yandex" content="noindex, nofollow" />
     {{ end }}
+    {{ template "partials_head_resources.html" . }}
 </head>
 
 <body>
     <div class="site-content">
+        {{ template "partials_header.html" . }}
         <article>
             <h1 class="article-title">{{ .Meta.Title }}</h1>
             {{ if .Meta.Description }}
@@ -28,6 +30,7 @@
             <hr>
             {{ .Content }}
         </article>
+        {{ template "partials_footer.html" . }}
     </div>
 </body>
 

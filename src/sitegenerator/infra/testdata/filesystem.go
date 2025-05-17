@@ -37,6 +37,10 @@ func TemplatesDir() string {
 	return filepath.Join(testDataDir(), "templates")
 }
 
+func PublicDir() string {
+	return filepath.Join(testDataDir(), "public")
+}
+
 func ExpectedHtmlDir() string {
 	return filepath.Join(testDataDir(), "expected_html")
 }
