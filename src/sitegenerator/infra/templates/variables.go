@@ -12,7 +12,7 @@ type articlePageVars struct {
 	Content   template.HTML
 }
 
-func toArticlePageVars(d app.ArticlePageDetails) *articlePageVars {
+func toArticlePageVars(d *app.ArticlePageDetails) *articlePageVars {
 	return &articlePageVars{
 		IsVisible: d.IsVisible,
 		Meta:      d.Meta,
@@ -26,7 +26,7 @@ type sectionPageVars struct {
 	Pages     []app.UrlAndValue[*app.ArticleMetadata]
 }
 
-func toSectionPageVars(d app.SectionPageDetails) *sectionPageVars {
+func toSectionPageVars(d *app.SectionPageDetails) *sectionPageVars {
 	return &sectionPageVars{
 		IsVisible: d.IsVisible,
 		Title:     d.Title,
@@ -39,7 +39,7 @@ type indexPageVars struct {
 	Sections []app.UrlAndValue[string]
 }
 
-func toIndexPageVars(d app.IndexPageData) *indexPageVars {
+func toIndexPageVars(d *app.IndexPageData) *indexPageVars {
 	return &indexPageVars{
 		Sections: d.Sections,
 	}

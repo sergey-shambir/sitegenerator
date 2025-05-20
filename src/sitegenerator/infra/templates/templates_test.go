@@ -15,9 +15,9 @@ func TestRenderArticle(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	bytes, err := templates.GenerateArticlePage(app.ArticlePageDetails{
+	bytes, err := templates.GenerateArticlePage(&app.ArticlePageDetails{
 		IsVisible: true,
-		Meta:      testdata.ExpectedMetadata("internal/markdown-demo.md"),
+		Meta:      testdata.ExpectedMetadata("internal/markdown-demo.html"),
 		Content:   []byte("<strong>Hello, World!</strong>"),
 	})
 	if err != nil {
@@ -33,13 +33,13 @@ func TestRenderSection(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	bytes, err := templates.GenerateSectionPage(app.SectionPageDetails{
+	bytes, err := templates.GenerateSectionPage(&app.SectionPageDetails{
 		Title:     "Golang",
 		IsVisible: true,
 		Pages: []app.UrlAndValue[*app.ArticleMetadata]{
 			{
-				Url:   "/golang/error-handling.md",
-				Value: testdata.ExpectedMetadata("golang/error-handling.md"),
+				Url:   "/golang/error-handling.html",
+				Value: testdata.ExpectedMetadata("golang/error-handling.html"),
 			},
 		},
 	})
@@ -57,14 +57,14 @@ func TestRenderIndex(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	bytes, err := templates.GenerateIndexPage(app.IndexPageData{
+	bytes, err := templates.GenerateIndexPage(&app.IndexPageData{
 		Sections: []app.UrlAndValue[string]{
 			{
-				Url:   "/golang",
+				Url:   "/golang.html",
 				Value: "Golang",
 			},
 			{
-				Url:   "/atdd",
+				Url:   "/atdd.html",
 				Value: "ATDD",
 			},
 		},

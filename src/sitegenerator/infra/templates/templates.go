@@ -33,15 +33,15 @@ func ParseSiteTemplates(callbacks FuncCallbacks, templatesDir string) (app.SiteT
 	}, nil
 }
 
-func (t *siteTemplates) GenerateArticlePage(d app.ArticlePageDetails) ([]byte, error) {
+func (t *siteTemplates) GenerateArticlePage(d *app.ArticlePageDetails) ([]byte, error) {
 	return t.generatePage("article_page.html", toArticlePageVars(d))
 }
 
-func (t *siteTemplates) GenerateSectionPage(d app.SectionPageDetails) ([]byte, error) {
+func (t *siteTemplates) GenerateSectionPage(d *app.SectionPageDetails) ([]byte, error) {
 	return t.generatePage("section_page.html", toSectionPageVars(d))
 }
 
-func (t *siteTemplates) GenerateIndexPage(d app.IndexPageData) ([]byte, error) {
+func (t *siteTemplates) GenerateIndexPage(d *app.IndexPageData) ([]byte, error) {
 	return t.generatePage("index_page.html", toIndexPageVars(d))
 }
 

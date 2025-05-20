@@ -32,6 +32,9 @@ func (t *targets) Write(path string, data []byte) error {
 	if err != nil {
 		return err
 	}
+
+	defer dst.Close()
+
 	_, err = dst.Write(data)
 	if err != nil {
 		return xerrors.Errorf("failed to to output file %s: %w", path, err)
@@ -45,14 +48,17 @@ func (t *targets) Copy(path string, src io.Reader) error {
 		return err
 	}
 
+	defer dst.Close()
+
 	_, err = io.Copy(dst, src)
 	if err != nil {
 		return xerrors.Errorf("failed to copy to output file %s: %w", path, err)
 	}
+
 	return nil
 }
 
-func (t *targets) openOutputFile(path string) (io.Writer, error) {
+func (t *targets) openOutputFile(path string) (io.WriteCloser, error) {
 	err := t.ensureParentDirCreated(path)
 	if err != nil {
 		return nil, err

@@ -28,7 +28,7 @@ type IndexPageData struct {
 
 // SiteTemplates - инструмент для генерации HTML-страниц сайта.
 type SiteTemplates interface {
-	GenerateArticlePage(d ArticlePageDetails) ([]byte, error)
-	GenerateSectionPage(d SectionPageDetails) ([]byte, error)
-	GenerateIndexPage(d IndexPageData) ([]byte, error)
+	GenerateArticlePage(d *ArticlePageDetails) ([]byte, error)
+	GenerateSectionPage(d *SectionPageDetails) ([]byte, error)
+	GenerateIndexPage(d *IndexPageData) ([]byte, error)
 }

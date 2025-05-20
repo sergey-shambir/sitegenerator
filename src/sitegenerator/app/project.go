@@ -14,6 +14,7 @@ type Project interface {
 	AddArticles(paths []string) error
 	Save() error
 
-	GetArticleSection(path string) *SectionPageDetails
+	IsVisibleArticle(path string) bool
+	GetArticleMetadata(path string) *ArticleMetadata
 	ListSections() []*SectionPageDetails
 }

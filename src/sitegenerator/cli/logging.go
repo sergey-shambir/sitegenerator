@@ -26,3 +26,7 @@ func (g *generatorLogger) LogCopiedFile(path string) {
 func (g *generatorLogger) LogConvertedFile(path string, outputPath string) {
 	g.logger.Info("Converted file " + path + " to " + outputPath)
 }
+
+func (g *generatorLogger) LogGeneratedPage(outputPath string) {
+	g.logger.Info("Generated page " + outputPath)
+}

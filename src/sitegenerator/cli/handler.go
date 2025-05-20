@@ -12,6 +12,7 @@ import (
 	"sitegenerator/infra/convert"
 	"sitegenerator/infra/project"
 	"sitegenerator/infra/targets"
+	"sitegenerator/infra/templates"
 )
 
 const (
@@ -58,9 +59,15 @@ func generate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	callbacks := templates.CreateFuncCallbacks(config.TargetDir)
+	templates, err := templates.ParseSiteTemplates(callbacks, config.TemplatesDir)
+	if err != nil {
+		return err
+	}
+
 	logger := newGeneratorLogger()
 
-	generator := app.NewGenerator(sources, targets, converter, proj, logger)
+	generator := app.NewGenerator(sources, targets, converter, templates, proj, logger)
 
 	return generator.Generate()
 }

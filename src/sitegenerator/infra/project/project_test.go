@@ -24,17 +24,17 @@ func TestLoadProject(t *testing.T) {
 	sections := project.ListSections()
 
 	assert.Equal(t, &app.SectionPageDetails{
-		Url:       "/internal",
+		Url:       "/internal.html",
 		Title:     "Внутренние статьи",
 		IsVisible: true,
-		Pages:     testdata.ExpectedArticlePages("internal/markdown-demo.md", "internal/notes.md"),
+		Pages:     testdata.ExpectedArticlePages("internal/markdown-demo.html", "internal/notes.html"),
 	}, sections[0])
 
 	assert.Equal(t, &app.SectionPageDetails{
-		Url:       "/drafts",
+		Url:       "/drafts.html",
 		Title:     "Черновики",
 		IsVisible: false,
-		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.md"),
+		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.html"),
 	}, sections[1])
 }
 
@@ -52,10 +52,10 @@ func TestEditProject(t *testing.T) {
 	assert.Len(t, sections, 2)
 
 	assert.Equal(t, &app.SectionPageDetails{
-		Url:       "/drafts",
+		Url:       "/drafts.html",
 		Title:     "Черновики",
 		IsVisible: false,
-		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.md", "drafts/testing-pyramid.md"),
+		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.html", "drafts/testing-pyramid.html"),
 	}, sections[1])
 
 	err = project.AddArticles([]string{
@@ -67,10 +67,10 @@ func TestEditProject(t *testing.T) {
 	sections = project.ListSections()
 	assert.Len(t, sections, 3)
 	assert.Equal(t, &app.SectionPageDetails{
-		Url:       "/golang",
+		Url:       "/golang.html",
 		Title:     "golang",
 		IsVisible: true,
-		Pages:     testdata.ExpectedArticlePages("golang/unicode.md", "golang/error-handling.md"),
+		Pages:     testdata.ExpectedArticlePages("golang/unicode.html", "golang/error-handling.html"),
 	}, sections[2])
 }
 
@@ -100,23 +100,23 @@ func TestSaveProject(t *testing.T) {
 
 	sections := project.ListSections()
 	assert.Equal(t, &app.SectionPageDetails{
-		Url:       "/internal",
+		Url:       "/internal.html",
 		Title:     "Внутренние статьи",
 		IsVisible: true,
-		Pages:     testdata.ExpectedArticlePages("internal/markdown-demo.md", "internal/notes.md"),
+		Pages:     testdata.ExpectedArticlePages("internal/markdown-demo.html", "internal/notes.html"),
 	}, sections[0])
 	assert.Len(t, sections, 3)
 	assert.Equal(t, &app.SectionPageDetails{
-		Url:       "/drafts",
+		Url:       "/drafts.html",
 		Title:     "Черновики",
 		IsVisible: false,
-		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.md", "drafts/testing-pyramid.md"),
+		Pages:     testdata.ExpectedArticlePages("drafts/acceptance-testing.html", "drafts/testing-pyramid.html"),
 	}, sections[1])
 	sections = project.ListSections()
 	assert.Equal(t, &app.SectionPageDetails{
-		Url:       "/golang",
+		Url:       "/golang.html",
 		Title:     "golang",
 		IsVisible: true,
-		Pages:     testdata.ExpectedArticlePages("golang/unicode.md", "golang/error-handling.md"),
+		Pages:     testdata.ExpectedArticlePages("golang/unicode.html", "golang/error-handling.html"),
 	}, sections[2])
 }
