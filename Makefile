@@ -4,7 +4,7 @@ RELEASE?=0.1.0
 COMMIT?=$(shell git rev-parse --short HEAD)
 BUILD_TIME?=$(shell date -u '+%Y-%m-%d %H:%M:%S')
 
-all: tidy test build image
+all: tidy test build test-js image
 
 clean:
 	rm -f bin/sitegenerator
@@ -18,6 +18,11 @@ build:
 test:
 	cd src/sitegenerator && \
 	go test ./... && \
+	cd ../..
+
+test-js:
+	cd src/nodeconverter && \
+	npm run test && \
 	cd ../..
 
 tidy:

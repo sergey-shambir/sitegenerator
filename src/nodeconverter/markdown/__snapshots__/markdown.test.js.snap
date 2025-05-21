@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`convertMarkdown function can process images 1`] = `
+"<nav class="table-of-contents"><ol><li><a href="#Izobrazheniya">Изображения</a></li></ol></nav><h1 id="Izobrazheniya" tabindex="-1">Изображения</h1>
+<figure data-type="image"><img src="img/image.jpg?v=9eac7817" alt="Изображение в формате JPEG" loading="lazy" decoding="async"></figure>
+<figure data-type="image"><img src="img/image.png?v=7633de90" alt="Изображение в формате PNG" loading="lazy" decoding="async"><figcaption>Ещё и с заголовком</figcaption></figure>
+"
+`;
